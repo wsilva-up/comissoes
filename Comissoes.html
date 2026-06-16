@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Comissões Pro</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -36,12 +37,24 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .lock-logo{width:78px;height:78px;background:linear-gradient(135deg,#7B6EF6,#B06EF6);border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:1.5rem;box-shadow:0 8px 40px rgba(123,110,246,0.4)}
 .lock-title{font-size:24px;font-weight:700;margin-bottom:6px;letter-spacing:-0.5px}
 .lock-title span{color:var(--accent2)}
-.lock-sub{font-size:13px;color:var(--text2);margin-bottom:2.5rem;text-align:center;line-height:1.6}
+.lock-sub{font-size:13px;color:var(--text2);margin-bottom:2rem;text-align:center;line-height:1.6}
+
+/* GOOGLE BTN */
+.google-btn{width:100%;padding:14px 20px;background:white;border:1px solid #dadce0;border-radius:var(--radius-sm);font-size:15px;font-weight:500;color:#3c4043;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;transition:box-shadow 0.2s,background 0.2s;margin-bottom:12px}
+.google-btn:hover{box-shadow:0 2px 8px rgba(0,0,0,0.15)}
+.google-btn:active{background:#f8f8f8}
+.google-btn svg{width:20px;height:20px;flex-shrink:0}
+.google-btn:disabled{opacity:0.6;cursor:not-allowed}
+
+.divider{display:flex;align-items:center;gap:12px;margin:12px 0;width:100%}
+.divider-line{flex:1;height:1px;background:var(--border2)}
+.divider-text{font-size:12px;color:var(--text3)}
+
 .lock-input-wrap{width:100%;position:relative;margin-bottom:10px}
 .lock-input{width:100%;padding:15px 50px 15px 18px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:16px;color:var(--text);letter-spacing:2px;outline:none;transition:border 0.2s,box-shadow 0.2s}
 .lock-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
 .eye-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text2);font-size:20px;padding:4px;line-height:1}
-.lock-btn{width:100%;padding:16px;background:linear-gradient(135deg,#7B6EF6,#9B6EF6);border:none;border-radius:var(--radius-sm);font-size:16px;font-weight:600;color:white;cursor:pointer;transition:opacity 0.2s,transform 0.1s;margin-top:4px}
+.lock-btn{width:100%;padding:14px;background:linear-gradient(135deg,#7B6EF6,#9B6EF6);border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:600;color:white;cursor:pointer;transition:opacity 0.2s,transform 0.1s;margin-top:4px}
 .lock-btn:active{transform:scale(0.98);opacity:0.88}
 .lock-btn:disabled{opacity:0.6;cursor:not-allowed}
 .lock-error{color:var(--red);font-size:13px;text-align:center;min-height:18px;margin-top:8px}
@@ -51,7 +64,6 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 #master-wrap{width:100%;margin-top:12px}
 .master-label{font-size:11px;color:var(--text3);text-align:center;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em}
 
-/* SPINNER */
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -59,7 +71,6 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 #app{height:100%;display:flex;flex-direction:column;opacity:0;transition:opacity 0.4s;pointer-events:none}
 #app.visible{opacity:1;pointer-events:all}
 
-/* HEADER */
 .header{padding:12px 1.25rem 0;flex-shrink:0;background:var(--bg);transition:background 0.3s}
 .header-top{display:flex;align-items:center;justify-content:space-between;padding:4px 0 14px}
 .logo-wrap{display:flex;align-items:center;gap:10px}
@@ -67,24 +78,24 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .logo-text{font-size:16px;font-weight:700;letter-spacing:-0.3px}
 .logo-text span{color:var(--accent2)}
 .header-right{display:flex;align-items:center;gap:8px}
-.theme-btn{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 10px;cursor:pointer;font-size:16px;line-height:1;transition:background 0.2s}
-.user-chip{font-size:12px;color:var(--text2);background:var(--surface2);padding:5px 12px;border-radius:20px;border:1px solid var(--border);font-weight:500;cursor:pointer}
+.theme-btn{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 10px;cursor:pointer;font-size:16px;line-height:1}
+.user-chip{font-size:12px;color:var(--text2);background:var(--surface2);padding:5px 12px;border-radius:20px;border:1px solid var(--border);font-weight:500;cursor:pointer;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* TABS */
-.tabs{display:flex;background:var(--surface2);border-radius:var(--radius-sm);padding:4px;gap:2px;transition:background 0.3s}
+/* AVATAR */
+.user-avatar{width:32px;height:32px;border-radius:50%;border:2px solid var(--accent);object-fit:cover;cursor:pointer}
+
+.tabs{display:flex;background:var(--surface2);border-radius:var(--radius-sm);padding:4px;gap:2px}
 .tab{flex:1;padding:9px 4px 7px;border:none;background:none;border-radius:8px;font-size:11px;font-weight:500;color:var(--text2);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:all 0.25s}
 .tab-icon{font-size:17px;line-height:1}
 .tab.active{background:var(--surface);color:var(--accent);box-shadow:var(--shadow)}
 .tab-dot{width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:0;transition:opacity 0.25s}
 .tab.active .tab-dot{opacity:1}
 
-/* SCREENS */
 .screens{flex:1;overflow:hidden;position:relative;padding-top:10px}
 .screen{position:absolute;inset:0;overflow-y:auto;padding:0 1.25rem 100px;opacity:0;transform:translateX(30px);transition:opacity 0.28s cubic-bezier(.4,0,.2,1),transform 0.28s cubic-bezier(.4,0,.2,1);pointer-events:none;-webkit-overflow-scrolling:touch}
 .screen.active{opacity:1;transform:translateX(0);pointer-events:all}
 .screen::-webkit-scrollbar{display:none}
 
-/* CARDS */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:12px;box-shadow:var(--shadow)}
 .card-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;font-weight:600}
 .field-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)}
@@ -94,7 +105,6 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .field-input:focus{border-color:var(--accent)}
 .field-select{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;font-size:14px;color:var(--text);outline:none;cursor:pointer;width:145px;-webkit-appearance:none}
 
-/* TOGGLE */
 .toggle-field{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)}
 .toggle-field:last-child{border-bottom:none}
 .toggle-info{flex:1;padding-right:12px}
@@ -107,7 +117,6 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .sw input:checked~.sw-track{background:var(--accent);border-color:var(--accent)}
 .sw input:checked~.sw-thumb{transform:translateX(19px);background:white}
 
-/* RESULT */
 .result-hero{background:linear-gradient(135deg,rgba(26,22,64,0.9),rgba(20,18,40,0.95));border:1px solid rgba(123,110,246,0.3);border-radius:var(--radius);padding:1.5rem;margin-bottom:12px;position:relative;overflow:hidden}
 :root.light .result-hero{background:linear-gradient(135deg,#EEEBff,#E8E4FF);border-color:rgba(99,88,232,0.3)}
 .result-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;background:rgba(123,110,246,0.1);border-radius:50%;filter:blur(35px);pointer-events:none}
@@ -122,7 +131,6 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .bk-divider{height:1px;background:rgba(123,110,246,0.15);margin:8px 0}
 .bk-total{display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:var(--accent)}
 
-/* BUTTONS */
 .btn-primary{width:100%;padding:16px;background:linear-gradient(135deg,#7B6EF6,#9B6EF6);border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:600;color:white;cursor:pointer;transition:opacity 0.2s,transform 0.1s;margin-bottom:10px}
 .btn-primary:active{transform:scale(0.98);opacity:0.88}
 .btn-ghost{width:100%;padding:13px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:14px;color:var(--text2);cursor:pointer;transition:all 0.2s;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px}
@@ -131,19 +139,16 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .btn-import{position:relative;overflow:hidden}
 .btn-import input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
 
-/* EXTRAS */
 .extras-toggle{width:100%;background:none;border:1px dashed var(--border2);border-radius:var(--radius-sm);padding:12px;color:var(--text3);font-size:13px;cursor:pointer;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px}
 .extras-panel{overflow:hidden;max-height:0;opacity:0;transition:max-height 0.4s cubic-bezier(.4,0,.2,1),opacity 0.3s}
 .extras-panel.open{max-height:600px;opacity:1}
 
-/* STATS */
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .stat-tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;box-shadow:var(--shadow)}
 .stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;font-weight:600}
 .stat-val{font-size:19px;font-weight:700;letter-spacing:-0.5px;line-height:1;color:var(--text)}
 .stat-val.green{color:var(--green)}
 
-/* SALE CARDS */
 .sale-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:10px;box-shadow:var(--shadow)}
 .sale-name{font-size:15px;font-weight:600;color:var(--text);margin-bottom:3px}
 .sale-meta{font-size:12px;color:var(--text2);line-height:1.6}
@@ -160,12 +165,10 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .badge-fin{background:rgba(59,130,246,0.12);color:#6098f0}
 .badge-custom{background:var(--amber-bg);color:var(--amber)}
 
-/* EMPTY */
 .empty-state{text-align:center;padding:4rem 1rem}
 .empty-icon{font-size:52px;margin-bottom:1rem;opacity:0.35}
 .empty-txt{font-size:14px;line-height:1.7;color:var(--text3)}
 
-/* CONFIG */
 .cfg-section{margin-bottom:1.5rem}
 .cfg-title{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);font-weight:600;display:flex;align-items:center;justify-content:space-between}
 .cfg-add-btn{background:var(--accent);border:none;color:white;width:24px;height:24px;border-radius:50%;font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
@@ -179,24 +182,20 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 .cfg-edit-btn:active{color:var(--accent)}
 .cfg-del-btn:active{color:var(--red)}
 
-/* EXPORT */
 .export-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:1.25rem;margin-bottom:12px;box-shadow:var(--shadow)}
 .export-card-title{font-size:15px;font-weight:600;margin-bottom:5px;color:var(--text)}
 .export-card-desc{font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.55}
 .export-card.warn{border-color:rgba(217,119,6,0.25)}
 .export-card.danger{border-color:rgba(220,38,38,0.2)}
 
-/* STATUS BADGE (acesso via Google) */
 .access-badge{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--green);background:var(--green-bg);padding:5px 12px;border-radius:20px;margin-top:6px;width:fit-content}
 .access-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
 
-/* TOAST */
 #toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--surface3);border:1px solid var(--border2);border-radius:24px;padding:10px 22px;font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;opacity:0;transition:all 0.3s cubic-bezier(.4,0,.2,1);pointer-events:none;z-index:300;max-width:90vw;text-align:center}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #toast.success{border-color:rgba(5,150,105,0.4);color:var(--green)}
 #toast.error{border-color:rgba(220,38,38,0.4);color:var(--red)}
 
-/* MODAL */
 #modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;display:none;align-items:flex-end;justify-content:center}
 #modal-overlay.open{display:flex}
 .modal-sheet{background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;padding:1.5rem;width:100%;max-width:480px;border-top:1px solid var(--border2);animation:slideUp 0.3s cubic-bezier(.4,0,.2,1)}
@@ -220,24 +219,29 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 <div id="lock">
   <div class="lock-logo">💰</div>
   <div class="lock-title">Comissões<span>Pro</span></div>
-  <p class="lock-sub">App protegido por chave de acesso.<br>Insira sua chave para entrar.</p>
+  <p class="lock-sub">Faça login com sua conta Google<br>para acessar o app.</p>
+
+  <!-- BOTÃO GOOGLE -->
+  <button class="google-btn" id="google-btn" onclick="startGoogleLogin()">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+    </svg>
+    Entrar com Google
+  </button>
+
+  <div class="divider"><div class="divider-line"></div><div class="divider-text">ou use a chave de acesso</div><div class="divider-line"></div></div>
+
   <div class="lock-input-wrap">
-    <input class="lock-input" type="password" id="key-input" placeholder="Chave de acesso" maxlength="20" autocomplete="off">
+    <input class="lock-input" type="password" id="key-input" placeholder="Chave de acesso (admin)" maxlength="20" autocomplete="off">
     <button class="eye-btn" onclick="toggleEye('key-input')">👁</button>
   </div>
-  <button class="lock-btn" id="lock-btn" onclick="tryUnlock()">Entrar</button>
+  <button class="lock-btn" id="lock-btn" onclick="tryMasterKey()">Entrar com chave</button>
   <div class="lock-checking" id="lock-checking"></div>
   <div class="lock-error" id="lock-error"></div>
   <div class="lock-attempts" id="lock-attempts"></div>
-  <button class="master-toggle" onclick="toggleMasterPanel()">Acesso de administrador</button>
-  <div id="master-wrap" style="display:none">
-    <div class="master-label">— Área restrita (Walter) —</div>
-    <div class="lock-input-wrap" style="margin-top:8px">
-      <input class="lock-input" type="password" id="master-input" placeholder="Senha mestra" maxlength="20" autocomplete="off">
-      <button class="eye-btn" onclick="toggleEye('master-input')">👁</button>
-    </div>
-    <button class="lock-btn" style="background:linear-gradient(135deg,#3a3060,#5a4090);margin-top:8px" onclick="tryMaster()">Desbloquear como admin</button>
-  </div>
 </div>
 
 <!-- APP -->
@@ -250,7 +254,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
       </div>
       <div class="header-right">
         <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
-        <div class="user-chip" id="user-chip" onclick="editName()">Leonardo</div>
+        <div id="user-display"></div>
       </div>
     </div>
     <div class="tabs">
@@ -279,7 +283,6 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
           <input class="field-input" type="number" id="f-valor" value="50000" min="0" step="500" inputmode="numeric" oninput="calc()">
         </div>
       </div>
-
       <div class="card">
         <div class="card-label">Bônus aplicáveis</div>
         <div class="toggle-field">
@@ -296,13 +299,11 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
         </div>
         <div id="custom-toggles"></div>
       </div>
-
       <div class="result-hero">
         <div class="result-label-sm">Comissão calculada</div>
         <div class="result-amount" id="res-amount">R$ 500,00</div>
         <div id="res-breakdown"></div>
       </div>
-
       <button class="extras-toggle" id="extras-btn" onclick="toggleExtras()">✦ Detalhes opcionais da venda</button>
       <div class="extras-panel" id="extras-panel">
         <div class="card" style="margin-top:0">
@@ -361,8 +362,8 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
     <div class="screen" id="s3">
       <div class="export-card" id="admin-card" style="display:none">
         <div class="export-card-title">🔐 Acesso controlado</div>
-        <div class="export-card-desc">A validação de chaves é feita via Google Sheets. Para adicionar ou revogar um usuário, edite a planilha diretamente.</div>
-        <div class="access-badge"><div class="access-dot"></div>Conectado ao Google Sheets</div>
+        <div class="export-card-desc">Usuários autenticados via Google. Para liberar ou revogar acesso, edite a planilha Licenças diretamente.</div>
+        <div class="access-badge"><div class="access-dot"></div>Google OAuth ativo</div>
       </div>
       <div class="export-card">
         <div class="export-card-title">📤 Exportar para Excel</div>
@@ -398,9 +399,10 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 </div>
 
 <script>
-// ── CONFIG ───────────────────────────────────────────
+// ── CONFIGURAÇÃO ──────────────────────────────────────
+const GOOGLE_CLIENT_ID='155639212365-sol04o3annvmcdd0io7u09afieoctha9.apps.googleusercontent.com';
 const API_URL='https://script.google.com/macros/s/AKfycbxHIbJNSL4b2EZusKaDHtEngqMTWHvlmUDTiHOazQzsM4SnG2w53YJ0lTBslkK44RUp/exec';
-const _km=atob('V0FMVC05SyMyMDI2'); // senha mestra local (Walter)
+const _km=atob('V0FMVC05SyMyMDI2');
 
 let vendas=[];
 let customBonuses=[];
@@ -411,66 +413,99 @@ let extrasOpen=false;
 let currentTab=0;
 let toastTimer=null;
 let lightMode=false;
+let currentUser=null;
+let isAdmin=false;
 
-// ── LOCK ─────────────────────────────────────────────
-async function tryUnlock(){
-  if(blocked){toast('App bloqueado temporariamente.','error');return;}
-  const chave=(document.getElementById('key-input').value||'').trim();
-  if(!chave){toast('Digite a chave de acesso.','error');return;}
+// ── GOOGLE LOGIN ──────────────────────────────────────
+function startGoogleLogin(){
+  const btn=document.getElementById('google-btn');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span>Aguardando Google...';
+  google.accounts.oauth2.initTokenClient({
+    client_id:GOOGLE_CLIENT_ID,
+    scope:'openid email profile',
+    callback:(tokenResponse)=>{
+      if(tokenResponse.access_token){
+        verifyGoogleToken(tokenResponse.access_token);
+      } else {
+        btn.disabled=false;
+        btn.innerHTML=`<svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>Entrar com Google`;
+        document.getElementById('lock-error').textContent='Login cancelado.';
+      }
+    },
+  }).requestAccessToken();
+}
 
-  // Senha mestra local (Walter) — não consulta API
-  if(chave===_km){unlock('Admin (Walter)');return;}
-
-  // Consulta Google Sheets
-  setLockLoading(true);
+async function verifyGoogleToken(accessToken){
   try{
-    const res=await fetch(API_URL+'?chave='+encodeURIComponent(chave));
-    const data=await res.json();
+    // Busca info do usuário
+    const resp=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{
+      headers:{Authorization:'Bearer '+accessToken}
+    });
+    const info=await resp.json();
+    const email=info.email;
+    const nome=info.name||email;
+    const foto=info.picture||'';
+
+    // Verifica se email está na planilha
+    const check=await fetch(API_URL+'?email='+encodeURIComponent(email));
+    const data=await check.json();
+
     if(data.ok){
-      unlock(data.nome||'Usuário');
+      currentUser={email,nome,foto};
+      isAdmin=false;
+      unlock(nome,foto);
     } else if(data.motivo==='revogado'){
-      document.getElementById('lock-error').textContent='Este acesso foi desativado. Entre em contato com o administrador.';
-      document.getElementById('lock-attempts').textContent='';
-      setLockLoading(false);
+      resetGoogleBtn();
+      document.getElementById('lock-error').textContent='Acesso revogado. Entre em contato com o administrador.';
     } else {
-      attempts++;
-      const rem=5-attempts;
-      document.getElementById('lock-error').textContent='Chave incorreta ou não autorizada.';
-      if(rem<=0){blocked=true;document.getElementById('lock-error').textContent='App bloqueado após várias tentativas.';document.getElementById('lock-attempts').textContent='';setLockLoading(false);return;}
-      document.getElementById('lock-attempts').textContent='Tentativas restantes: '+rem;
-      setLockLoading(false);
+      resetGoogleBtn();
+      document.getElementById('lock-error').textContent='Este e-mail ('+email+') não tem acesso autorizado.';
     }
-  }catch(err){
-    // Sem internet — verifica cache local
-    const cached=localStorage.getItem('auth_cache');
-    if(cached===chave){unlock(localStorage.getItem('auth_name')||'Usuário');return;}
-    document.getElementById('lock-error').textContent='Sem conexão. Verifique a internet e tente novamente.';
-    setLockLoading(false);
+  }catch(e){
+    resetGoogleBtn();
+    document.getElementById('lock-error').textContent='Erro ao verificar acesso. Tente novamente.';
   }
 }
 
-function tryMaster(){
-  const v=(document.getElementById('master-input').value||'').trim();
-  if(v===_km){blocked=false;attempts=0;unlock('Admin (Walter)');}
-  else{document.getElementById('lock-error').textContent='Senha mestra incorreta.';}
+function resetGoogleBtn(){
+  const btn=document.getElementById('google-btn');
+  btn.disabled=false;
+  btn.innerHTML=`<svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>Entrar com Google`;
 }
 
-function setLockLoading(on){
-  const btn=document.getElementById('lock-btn');
-  const chk=document.getElementById('lock-checking');
-  btn.disabled=on;
-  btn.innerHTML=on?'<span class="spinner"></span>Verificando...':'Entrar';
-  chk.textContent=on?'Consultando Google Sheets...':'';
+// ── CHAVE MESTRA (Walter) ─────────────────────────────
+function tryMasterKey(){
+  const v=(document.getElementById('key-input').value||'').trim();
+  if(v===_km){
+    isAdmin=true;
+    currentUser={email:'admin',nome:'Admin (Walter)',foto:''};
+    unlock('Admin (Walter)','');
+  } else {
+    attempts++;
+    const rem=5-attempts;
+    document.getElementById('lock-error').textContent='Chave incorreta.';
+    if(rem<=0){blocked=true;document.getElementById('lock-error').textContent='App bloqueado após várias tentativas.';}
+    else document.getElementById('lock-attempts').textContent='Tentativas restantes: '+rem;
+  }
 }
 
-function unlock(user){
-  // Painel admin visível somente para Walter
-  const adminCard=document.getElementById('admin-card');
-  if(adminCard)adminCard.style.display=user==='Admin (Walter)'?'block':'none';
-  // Cache local para uso offline
-  const chave=(document.getElementById('key-input').value||'').trim();
-  if(chave&&chave!==_km){localStorage.setItem('auth_cache',chave);localStorage.setItem('auth_name',user);}
-  document.getElementById('user-chip').textContent=user;
+function toggleEye(id){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';}
+document.getElementById('key-input').addEventListener('keydown',e=>{if(e.key==='Enter')tryMasterKey();});
+
+function unlock(nome,foto){
+  // Header user display
+  const ud=document.getElementById('user-display');
+  if(foto){
+    ud.innerHTML=`<img src="${foto}" class="user-avatar" title="${nome}" alt="${nome}">`;
+  } else {
+    ud.innerHTML=`<div class="user-chip">${nome}</div>`;
+  }
+  // Admin card
+  if(isAdmin){
+    const ac=document.getElementById('admin-card');
+    if(ac)ac.style.display='block';
+  }
   const lock=document.getElementById('lock');
   lock.classList.add('out');
   setTimeout(()=>{
@@ -480,25 +515,12 @@ function unlock(user){
   },400);
 }
 
-function toggleEye(id){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';}
-function toggleMasterPanel(){const w=document.getElementById('master-wrap');w.style.display=w.style.display==='none'?'block':'none';}
-document.getElementById('key-input').addEventListener('keydown',e=>{if(e.key==='Enter')tryUnlock();});
-document.getElementById('master-input').addEventListener('keydown',e=>{if(e.key==='Enter')tryMaster();});
-
 // ── THEME ─────────────────────────────────────────────
 function toggleTheme(){
   lightMode=!lightMode;
   document.documentElement.classList.toggle('light',lightMode);
   document.getElementById('theme-btn').textContent=lightMode?'🌙':'☀️';
   localStorage.setItem('theme',lightMode?'light':'dark');
-}
-
-// ── NAME ─────────────────────────────────────────────
-function editName(){
-  openModal('Nome do usuário','Digite o nome a exibir no app:',
-    [{id:'m-name',placeholder:'Ex: Leonardo',value:document.getElementById('user-chip').textContent}],
-    ()=>{const n=(document.getElementById('m-name').value||'').trim();if(n){document.getElementById('user-chip').textContent=n;localStorage.setItem('user_name',n);}},
-    'Salvar',false);
 }
 
 // ── TABS ─────────────────────────────────────────────
@@ -544,7 +566,6 @@ function deleteBonus(id){
 }
 function saveCustomBonuses(){localStorage.setItem('custom_bonuses',JSON.stringify(customBonuses));}
 function loadCustomBonuses(){try{customBonuses=JSON.parse(localStorage.getItem('custom_bonuses')||'[]');}catch(e){customBonuses=[];}}
-
 function renderCustomBonuses(){
   const el=document.getElementById('custom-bonus-list');
   if(!customBonuses.length){el.innerHTML='<div class="empty-state" style="padding:1.5rem 0"><div class="empty-txt">Nenhum bônus personalizado.<br>Toque em + para adicionar.</div></div>';return;}
@@ -557,10 +578,7 @@ function renderCustomBonuses(){
       <button class="cfg-del-btn" onclick="deleteBonus(${b.id})">🗑</button>
     </div>`).join('');
 }
-function updateBonusValue(id,val){
-  const b=customBonuses.find(b=>b.id===id);
-  if(b){b.value=parseFloat(val)||0;saveCustomBonuses();calc();}
-}
+function updateBonusValue(id,val){const b=customBonuses.find(b=>b.id===id);if(b){b.value=parseFloat(val)||0;saveCustomBonuses();calc();}}
 function renderCustomToggles(){
   const el=document.getElementById('custom-toggles');
   if(!customBonuses.length){el.innerHTML='';return;}
@@ -684,7 +702,6 @@ function renderHist(){
     return`<div class="sale-card"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div style="flex:1;padding-right:10px"><div class="sale-name">${nome}</div><div class="sale-meta">${meta}</div></div><div style="text-align:right"><div class="sale-comm">${fmt(v.comissao)}</div><button class="del-btn" onclick="confirmDel(${v.id})">🗑</button></div></div><div class="sale-badges">${badges}</div></div>`;
   }).join('');
 }
-
 function confirmDel(id){
   pendingAction=()=>{vendas=vendas.filter(v=>v.id!==id);saveVendas();renderHist();toast('Venda removida.');};
   openModal('Remover venda','Esta venda será removida permanentemente.',[],(()=>{}),'Remover',true);
@@ -726,8 +743,6 @@ function loadAll(){
   loadCfg();loadCustomBonuses();
   const theme=localStorage.getItem('theme');
   if(theme==='light'){lightMode=true;document.documentElement.classList.add('light');document.getElementById('theme-btn').textContent='🌙';}
-  const name=localStorage.getItem('user_name');
-  if(name)document.getElementById('user-chip').textContent=name;
 }
 
 // ── EXPORT ───────────────────────────────────────────
@@ -737,7 +752,7 @@ function exportXLSX(){
   const header=['DATA','CLIENTE','PROPOSTA','VEÍCULO','FINAL CHASSI','NOVO/USADO/VD','VALOR DA VENDA','FINANCIAMENTO','BANCO','ACESSORIOS','IPVA/TRANSF.','RETORNO','COMISSÃO','TRADE IN'];
   const rows=vendas.map(v=>[v.data,v.cliente||'',v.proposta||'',v.veiculo||'',v.chassi||'',v.tipo,v.valor,v.fin?'SIM':'NÃO',v.banco||'',v.acessorios||'-',v.ipvaValor||'-',v.retorno||'—',v.comissao,v.tradein||'—']);
   const total=parseFloat(vendas.reduce((s,v)=>s+v.comissao,0).toFixed(2));
-  const userName=document.getElementById('user-chip').textContent;
+  const userName=currentUser?currentUser.nome:'Usuário';
   const ws=XLSX.utils.aoa_to_sheet([
     [`COMISSÃO DE VENDA VENDEDOR: ${userName}`],
     header,...rows,[],
