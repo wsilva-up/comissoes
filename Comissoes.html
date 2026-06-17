@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=1.0, maximum-scale=5.0">
 <title>Comissões Pro</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -239,10 +239,10 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
     <button class="eye-btn" onclick="toggleEye('key-input')">👁</button>
   </div>
   <button class="lock-btn" id="lock-btn" onclick="tryMasterKey()">Entrar com chave</button>
+  <p style="margin-top:14px;font-size:11px;color:#5A5A70;text-align:center">Desenvolvido por <span style="color:#9090A8;font-weight:600">Walter A. da Silva</span></p>
   <div class="lock-checking" id="lock-checking"></div>
   <div class="lock-error" id="lock-error"></div>
   <div class="lock-attempts" id="lock-attempts"></div>
-  <p style="position:absolute;bottom:1.2rem;left:0;right:0;text-align:center;font-size:11px;color:#5A5A70">Desenvolvido por <span style="color:#9090A8;font-weight:600">Walter A. da Silva</span></p>
 </div>
 
 <!-- APP -->
@@ -294,10 +294,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
           <div class="toggle-info"><div class="toggle-name">Retorno R3</div><div class="toggle-desc">Bônus adicional para vendas classificadas R3</div></div>
           <label class="sw"><input type="checkbox" id="f-r3" onchange="calc()"><div class="sw-track"></div><div class="sw-thumb"></div></label>
         </div>
-        <div class="toggle-field">
-          <div class="toggle-info"><div class="toggle-name">Financiamento bancário</div><div class="toggle-desc">Venda com financiamento por banco parceiro</div></div>
-          <label class="sw"><input type="checkbox" id="f-fin" onchange="calc()"><div class="sw-track"></div><div class="sw-thumb"></div></label>
-        </div>
+
         <div id="custom-toggles"></div>
       </div>
       <div class="result-hero">
@@ -308,6 +305,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
       <button class="extras-toggle" id="extras-btn" onclick="toggleExtras()">✦ Detalhes opcionais da venda</button>
       <div class="extras-panel" id="extras-panel">
         <div class="card" style="margin-top:0">
+          <div class="field-row"><span class="field-label">Data</span><input class="field-input" type="date" id="f-data" style="width:145px"></div>
           <div class="field-row"><span class="field-label">Cliente</span><input class="field-input" type="text" id="f-cliente" placeholder="Nome completo"></div>
           <div class="field-row"><span class="field-label">Veículo</span><input class="field-input" type="text" id="f-veiculo" placeholder="Modelo"></div>
           <div class="field-row"><span class="field-label">Proposta nº</span><input class="field-input" type="text" id="f-proposta" placeholder="Número" inputmode="numeric"></div>
@@ -315,20 +313,11 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
           <div class="field-row"><span class="field-label">Banco</span><input class="field-input" type="text" id="f-banco" placeholder="Financiador"></div>
           <div class="field-row"><span class="field-label">Acessórios (R$)</span><input class="field-input" type="number" id="f-acessorios" placeholder="0" inputmode="numeric" min="0"></div>
           <div class="field-row"><span class="field-label">IPVA/Transf. (R$)</span><input class="field-input" type="number" id="f-ipva-valor" placeholder="0" inputmode="numeric" min="0"></div>
-          <div class="field-row">
-            <span class="field-label">Retorno</span>
-            <select class="field-select" id="f-retorno" style="width:100px">
-              <option value="—">—</option><option value="R0">R0</option><option value="R1">R1</option><option value="R2">R2</option><option value="R3">R3</option>
-            </select>
-          </div>
-          <div class="field-row">
-            <span class="field-label">Trade In</span>
-            <select class="field-select" id="f-tradein" style="width:100px">
-              <option value="—">—</option><option value="SIM">SIM</option><option value="NÃO">NÃO</option>
-            </select>
-          </div>
+
         </div>
       </div>
+      <input type="hidden" id="f-retorno" value="—">
+      <input type="hidden" id="f-tradein" value="—">
       <button class="btn-primary" onclick="salvar()">✓ Registrar venda</button>
     </div>
 
@@ -403,7 +392,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-fam
 // ── CONFIGURAÇÃO ──────────────────────────────────────
 const GOOGLE_CLIENT_ID='155639212365-sol04o3annvmcdd0io7u09afieoctha9.apps.googleusercontent.com';
 const API_URL='https://script.google.com/macros/s/AKfycbxHIbJNSL4b2EZusKaDHtEngqMTWHvlmUDTiHOazQzsM4SnG2w53YJ0lTBslkK44RUp/exec';
-const _km=atob('V0FMVC05SyMyMDI2');
+// senha mestra gerenciada via Google Sheets
 
 let vendas=[];
 let customBonuses=[];
@@ -476,18 +465,33 @@ function resetGoogleBtn(){
 }
 
 // ── CHAVE MESTRA (Walter) ─────────────────────────────
-function tryMasterKey(){
-  const v=(document.getElementById('key-input').value||'').trim();
-  if(v===_km){
-    isAdmin=true;
-    currentUser={email:'admin',nome:'Admin (Walter)',foto:''};
-    unlock('Admin (Walter)','');
-  } else {
-    attempts++;
-    const rem=5-attempts;
-    document.getElementById('lock-error').textContent='Chave incorreta.';
-    if(rem<=0){blocked=true;document.getElementById('lock-error').textContent='App bloqueado após várias tentativas.';}
-    else document.getElementById('lock-attempts').textContent='Tentativas restantes: '+rem;
+async function tryMasterKey(){
+  if(blocked){toast('App bloqueado temporariamente.','error');return;}
+  const chave=(document.getElementById('key-input').value||'').trim();
+  if(!chave){toast('Digite a chave de acesso.','error');return;}
+  const btn=document.getElementById('lock-btn');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Verificando...';
+  try{
+    const res=await fetch(API_URL+'?chave='+encodeURIComponent(chave));
+    const data=await res.json();
+    if(data.ok){
+      isAdmin=data.admin||false;
+      currentUser={email:'admin',nome:data.nome,foto:''};
+      unlock(data.nome,'');
+    } else if(data.motivo==='revogado'){
+      document.getElementById('lock-error').textContent='Este acesso foi desativado.';
+      btn.disabled=false;btn.innerHTML='Entrar com chave';
+    } else {
+      attempts++;
+      const rem=5-attempts;
+      document.getElementById('lock-error').textContent='Chave incorreta.';
+      if(rem<=0){blocked=true;document.getElementById('lock-error').textContent='App bloqueado após várias tentativas.';}
+      else document.getElementById('lock-attempts').textContent='Tentativas restantes: '+rem;
+      btn.disabled=false;btn.innerHTML='Entrar com chave';
+    }
+  }catch(e){
+    document.getElementById('lock-error').textContent='Sem conexão. Verifique a internet.';
+    btn.disabled=false;btn.innerHTML='Entrar com chave';
   }
 }
 
@@ -598,7 +602,7 @@ function getCfg(){
     pCompra:parseFloat(document.getElementById('c-compra').value)||0,
     bIpva:parseFloat(document.getElementById('c-ipva').value)||0,
     bR3:parseFloat(document.getElementById('c-r3').value)||0,
-    bFin:parseFloat(document.getElementById('c-fin').value)||0,
+    bFin:0,
   };
 }
 function fmt(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
@@ -608,7 +612,7 @@ function calc(){
   const valor=parseFloat(document.getElementById('f-valor').value)||0;
   const ipva=document.getElementById('f-ipva').checked;
   const r3=document.getElementById('f-r3').checked;
-  const fin=document.getElementById('f-fin').checked;
+  const fin=false;
   const c=getCfg();
   const pct=tipo==='NOVO'?c.pNovo:tipo==='COMPRA'?c.pCompra:c.pUsado;
   const base=valor*(pct/100);
@@ -630,6 +634,11 @@ function calc(){
 }
 
 function toggleExtras(){
+  if(!extrasOpen){
+    const today=new Date().toISOString().split('T')[0];
+    const fd=document.getElementById('f-data');
+    if(fd&&!fd.value)fd.value=today;
+  }
   extrasOpen=!extrasOpen;
   document.getElementById('extras-panel').classList.toggle('open',extrasOpen);
   document.getElementById('extras-btn').textContent=extrasOpen?'▲ Ocultar detalhes':'✦ Detalhes opcionais da venda';
@@ -641,7 +650,7 @@ function salvar(){
   if(valor<=0){toast('Informe o valor da venda.','error');return;}
   const ipva=document.getElementById('f-ipva').checked;
   const r3=document.getElementById('f-r3').checked;
-  const fin=document.getElementById('f-fin').checked;
+  const fin=false;
   const c=getCfg();
   const pct=tipo==='NOVO'?c.pNovo:tipo==='COMPRA'?c.pCompra:c.pUsado;
   const base=valor*(pct/100);
@@ -649,7 +658,7 @@ function salvar(){
   const activeBonusNames=customBonuses.filter(b=>{const el=document.getElementById('cb-'+b.id);return el&&el.checked;}).map(b=>b.name).join(', ');
   const total=parseFloat((base+(ipva?c.bIpva:0)+(r3?c.bR3:0)+(fin?c.bFin:0)+bCustom).toFixed(2));
   vendas.unshift({
-    id:Date.now(),data:new Date().toLocaleDateString('pt-BR'),
+    id:Date.now(),data:(()=>{const d=document.getElementById('f-data');if(d&&d.value){const[y,m,dd]=d.value.split('-');return dd+'/'+m+'/'+y;}return new Date().toLocaleDateString('pt-BR');})(),
     tipo,valor,ipva,r3,fin,comissao:total,
     cliente:document.getElementById('f-cliente').value||'',
     veiculo:document.getElementById('f-veiculo').value||'',
@@ -665,12 +674,12 @@ function salvar(){
   saveVendas();
   ['f-cliente','f-veiculo','f-proposta','f-chassi','f-banco'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-acessorios').value='';
+  document.getElementById('f-data').value='';
   document.getElementById('f-ipva-valor').value='';
   document.getElementById('f-retorno').value='—';
   document.getElementById('f-tradein').value='—';
   document.getElementById('f-ipva').checked=false;
   document.getElementById('f-r3').checked=false;
-  document.getElementById('f-fin').checked=false;
   customBonuses.forEach(b=>{const el=document.getElementById('cb-'+b.id);if(el)el.checked=false;});
   calc();toast('Venda registrada!','success');
   setTimeout(()=>goTab(1),500);
